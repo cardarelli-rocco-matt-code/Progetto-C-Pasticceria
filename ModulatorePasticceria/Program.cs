@@ -21,9 +21,33 @@ class Program
 
     static int PrendiOrdinazione()
     {
-        Console.WriteLine("Scegli un dolce (1-10): ");
-        int scelta = Convert.ToInt32(Console.ReadLine());
-        Console.WriteLine("");
+        int scelta = 1;
+        int proceed = 0;
+        string? conf1;
+        int conf2;
+        string? input = Console.ReadLine();
+
+        while (proceed == 0)
+        {
+            while (!int.TryParse(input, out scelta))
+            {
+                Console.WriteLine("Inserisci un numero valido:");
+                input = Console.ReadLine();
+            }
+
+            Console.WriteLine("Confermi? (0 - no, 1 - si)");
+            conf1 = Console.ReadLine();
+            while (!int.TryParse(conf1, out conf2))
+            {
+                Console.WriteLine("Confermi? (0 - no, 1 - si)");
+                conf1 = Console.ReadLine();
+            }
+            if (conf1 == "1")
+                proceed = 1;
+            else
+                proceed = 0;
+        }
+        
         Console.WriteLine("");
         return scelta - 1;
     }
@@ -32,21 +56,17 @@ class Program
     {
         Console.WriteLine("Scegli un ingrediente da rimuovere (Nome): ");
         string scelta = (Console.ReadLine());
-        foreach (var ingrediente in dispensa)
+
+        if (dispensa.Contains(scelta))
         {
-            if (!dispensa.Contains(ingrediente))
-            {
-                dispensa.Remove(ingrediente);
-            }
+            dispensa.Remove(scelta);   
         }
 
-        foreach (var ingrediente in ingredienti)
+        if (ingredienti.Contains(scelta))
         {
-            if (!ingredienti.Contains(ingrediente))
-            {
-                ingredienti.Remove(ingrediente);
-            }
+            ingredienti.Remove(scelta);
         }
+
     }
 
     static string TrovaRicetta(List<string> ricette, int indice)
@@ -96,14 +116,16 @@ class Program
     static List<string> GeneraListaSpesa2(List<string> ingredienti, List<string> dispensa)
     {
         List<string> lista = new List<string>();
+
         foreach (var ingrediente in dispensa)
         {
-            lista.Add(ingrediente);
+            if (!dispensa.Contains(ingrediente))
+                lista.Add(ingrediente);
         }
 
         foreach (var ingrediente in ingredienti)
         {
-            if (!dispensa.Contains(ingrediente) && !lista.Contains(ingrediente))
+            if (!lista.Contains(ingrediente))
             {
                 lista.Add(ingrediente);
             }
@@ -117,6 +139,7 @@ class Program
         string msg = "";
         int endofcode = 0;
         int fun = 0;
+        int confirm = 0;
 
 
         List<string> listaSpesa = new List<string>();
@@ -138,8 +161,8 @@ class Program
         };
 
         string[] ingredientList = {
-            "farina", "zucchero", "uova", "cioccolato", "panna", "biscotti", 
-            "mascarpone", "caffè", "fragole", "gelatina", "burro", "formaggio", 
+            "farina", "zucchero", "uova", "cioccolato", "panna", "biscotti",
+            "mascarpone", "caffè", "fragole", "gelatina", "burro", "formaggio",
             "ricotta", "pasta sfoglia", "crema", "marmellata", "latte", "vaniglia"
         };
 
@@ -156,7 +179,6 @@ class Program
             Console.WriteLine("2 - Vedi Lista completa");
             Console.WriteLine("3 - Rimuovi ingrediente");
             fun = Convert.ToInt32(Console.ReadLine());
-
             Console.WriteLine("");
             EatString(msg);
 
@@ -170,13 +192,11 @@ class Program
                     {
                         MostraMenu(ricette);
                         int scelta = PrendiOrdinazione();
-
                         string ricetta = TrovaRicetta(ricette, scelta);
                         ingredienti = EstraiIngredienti(ricetta);
-    
                         listaSpesa = GeneraListaSpesa(ingredienti, dispensa);
+                        Console.WriteLine("Aggiunti alla lista della spesa:");
 
-                        Console.WriteLine("Lista della spesa:");
                         foreach (var item in listaSpesa)
                         {
                             Console.WriteLine("- " + item);
@@ -193,16 +213,18 @@ class Program
                 case 2:
                     listaSpesa = GeneraListaSpesa2(ingredienti, dispensa);
                     Console.WriteLine("Lista della spesa completa:");
+
                     foreach (var item in listaSpesa)
                     {
                         Console.WriteLine("- " + item);
                     }
-                    Console.WriteLine(""); 
+
+                    Console.WriteLine("");
                     break;
 
                 case 3:
                     listaSpesa = GeneraListaSpesa2(ingredienti, dispensa);
-                    listaSpesa = PrendiOrdinazione2(dispensa, ingredienti);
+                    PrendiOrdinazione2(dispensa, ingredienti);
                     Console.WriteLine("");
                     break;
 
